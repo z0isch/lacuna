@@ -1,0 +1,81 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.35.1.
+--
+-- see: https://github.com/sol/hpack
+
+name:           lacuna
+version:        0.1.0.0
+description:    Please see the README on Github at <https://github.com/githubuser/lacuna#readme>
+homepage:       https://github.com/githubuser/lacuna#readme
+bug-reports:    https://github.com/githubuser/lacuna/issues
+author:         Author name here
+maintainer:     example@example.com
+copyright:      2023 Author name here
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    CHANGELOG.md
+
+source-repository head
+  type: git
+  location: https://github.com/githubuser/lacuna
+
+library
+  exposed-modules:
+      Birdson
+      Import
+      Run
+      Types
+  other-modules:
+      Paths_lacuna
+  hs-source-dirs:
+      src
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
+  build-depends:
+      JuicyPixels
+    , base >=4.11 && <10
+    , kdt
+    , linear
+    , random
+    , rio >=0.1.12.0
+  default-language: Haskell2010
+
+executable lacuna-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_lacuna
+  hs-source-dirs:
+      app
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      JuicyPixels
+    , base >=4.11 && <10
+    , kdt
+    , lacuna
+    , linear
+    , optparse-simple
+    , random
+    , rio >=0.1.12.0
+  default-language: Haskell2010
+
+test-suite lacuna-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_lacuna
+  hs-source-dirs:
+      test
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      JuicyPixels
+    , base >=4.11 && <10
+    , hspec
+    , kdt
+    , lacuna
+    , linear
+    , random
+    , rio >=0.1.12.0
+  default-language: Haskell2010

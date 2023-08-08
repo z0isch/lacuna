@@ -1,0 +1,13 @@
+cradle:
+  stack:
+    - path: "./src"
+      component: "lacuna:lib"
+
+    - path: "./app/Main.hs"
+      component: "lacuna:exe:lacuna-exe"
+
+    - path: "./app/Paths_lacuna.hs"
+      component: "lacuna:exe:lacuna-exe"
+
+    - path: "./test"
+      component: "lacuna:test:lacuna-test"
