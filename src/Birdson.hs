@@ -28,8 +28,8 @@ data Birdson = Birdson
 
 $(makeLenses ''Birdson)
 
-runBirdson :: MonadIO m => Int -> m [V2 Int]
-runBirdson = fmap toList . evalStateT birdson <=< initialBirdson
+runBirdson :: MonadIO m => Int -> m (Set (V2 Int))
+runBirdson = evalStateT birdson <=< initialBirdson
 
 initialBirdson :: MonadIO m => Int -> m Birdson
 initialBirdson bounds = do

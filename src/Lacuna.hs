@@ -1,5 +1,6 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# LANGUAGE ViewPatterns #-}
 
 module Lacuna (module Lacuna) where
 
@@ -9,10 +10,11 @@ import Data.Semigroup (Endo (..), Min (..), Sum (..))
 import Import hiding (Lens, Lens', lens, over, to, view, (%~), (.~), (^.), (^..))
 import Linear
 import RIO.List qualified as L
-import RIO.Seq (Seq (..))
-import RIO.Seq qualified as Seq
 import RIO.Set qualified as Set
-import System.Random.Shuffle (shuffleM)
+import RIO.State (StateT, gets, modify, evalStateT)
+import System.Random (randomRIO)
+import qualified RIO.List.Partial as L
+import Control.Monad (replicateM)
 
 piece_size :: Int
 piece_size = 10
@@ -47,6 +49,18 @@ data LacunaState = LacunaState
 
 $(makeLenses ''LacunaState)
 
+pickRandomEls :: (Ord a, MonadIO m) => Int -> StateT [a] m [a]
+pickRandomEls numEls = go numEls []
+  where
+    go 0 picked = pure picked
+    go n picked = gets L.length >>= \case
+        0 -> pure picked
+        s -> do
+          i <- liftIO $ randomRIO (0, s - 1)
+          el <- gets (L.!! i)
+          modify $ L.delete el 
+          go (n-1) $ el:picked
+      
 initialLacunaState :: forall m. MonadIO m => m LacunaState
 initialLacunaState = do
   let _lsTurn = Player1
@@ -57,19 +71,15 @@ initialLacunaState = do
   pure LacunaState {..}
   where
     initialFlowers = do
-      b <- liftIO . shuffleM =<< runBirdson 400
+      b <- liftIO . evalStateT (pickRandomEls 49) . toList =<< runBirdson 400
       if length b >= 49
-        then mkFlowers $ take 49 b
+        then mkFlowers b
         else initialFlowers
 
 mkFlowers :: MonadIO m => [V2 Int] -> m Flowers
-mkFlowers s = do
-  r <- liftIO $ shuffleM s
-  pure $ fromSeq $ fmap toList $ Seq.chunksOf 7 $ Seq.fromList r
-  where
-    fromSeq :: Seq [V2 Int] -> Flowers
-    fromSeq (a :<| b :<| c :<| d :<| e :<| f :<| g :<| RIO.Seq.Empty) = (a, b, c, d, e, f, g) & each %~ Set.fromList
-    fromSeq _ = error "not enough flowers"
+mkFlowers = evalStateT (replicateM 7 (pickRandomEls 7)) >=> \case
+    (fmap Set.fromList -> [a,b,c,d,e,f,g]) -> pure (a,b,c,d,e,f,g)
+    _ -> error "not enough flowers"
 
 data Move = PlacePawn (V2 Int, V2 Int) (V2 Double)
 
