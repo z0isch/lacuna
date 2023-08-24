@@ -4,7 +4,6 @@ module UI (module UI) where
 
 import CanvasPoint
 import Control.Lens
-import Graphics.Blank
 import Import hiding (to, view, (^.), (^..))
 import Lacuna
 import Linear
@@ -35,8 +34,6 @@ data UIEvents = UIEvents
     uieMouseUp :: Maybe (CanvasPoint Double),
     uieKeyUp :: Maybe ()
   }
-
-type Animation = [Canvas ()]
 
 updateUIState :: MonadState UIState m => UIEvents -> m ()
 updateUIState UIEvents {..} = do

@@ -214,6 +214,8 @@ currentPlayerColor =
           Player2 -> player2Color
       )
 
+type Animation = [Canvas ()]
+
 renderAnimation :: MonadIO m => DeviceContext -> Animation -> m ()
 renderAnimation context animation = for_ animation $ \a -> do
   void $ liftIO $ send context $ clearCanvas >> a
