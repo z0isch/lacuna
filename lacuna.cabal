@@ -74,7 +74,6 @@ library
     , blank-canvas
     , comonad
     , foreign-store
-    , kdt
     , lens
     , linear
     , nonempty-zipper
@@ -128,7 +127,6 @@ executable lacuna-exe
     , blank-canvas
     , comonad
     , foreign-store
-    , kdt
     , lacuna
     , lens
     , linear
@@ -184,7 +182,6 @@ test-suite lacuna-test
     , comonad
     , foreign-store
     , hspec
-    , kdt
     , lacuna
     , lens
     , linear

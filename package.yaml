@@ -56,7 +56,6 @@ dependencies:
   - blank-canvas
   - comonad
   - foreign-store
-  - kdt
   - lens
   - linear
   - nonempty-zipper
