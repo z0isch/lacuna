@@ -4,7 +4,7 @@
 
 module Lacuna (module Lacuna) where
 
-import Birdson (runBirdson)
+import Birdson (birdson)
 import Control.Lens
 import Data.Semigroup (Endo (..), Min (..), Sum (..))
 import Import hiding (Lens, Lens', lens, over, to, view, (%~), (.~), (^.), (^..))
@@ -71,7 +71,7 @@ initialLacunaState = do
   pure LacunaState {..}
   where
     initialFlowers = do
-      b <- liftIO . evalStateT (pickRandomEls 49) . toList =<< runBirdson 400
+      b <- liftIO . evalStateT (pickRandomEls 49) . toList =<< birdson 400
       if length b >= 49
         then mkFlowers b
         else initialFlowers

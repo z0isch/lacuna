@@ -3,19 +3,17 @@
 module Render (module Render) where
 
 import CanvasPoint
-import Control.Comonad (extend)
 import Control.Lens
-import Data.List.NonEmpty (nonEmpty)
 import Data.List.NonEmpty qualified as NE
-import Data.List.NonEmpty.Zipper (Zipper)
-import Data.List.NonEmpty.Zipper qualified as Z
 import Graphics.Blank
-import Import hiding (Lens', to, (^.), (^..))
+import Import hiding (lefts, rights, Lens', to, (^.), (^..))
 import Lacuna
 import Linear
 import RIO.Map qualified as Map
 import RIO.Set qualified as Set
 import UI
+import Control.Comonad.Store ( extend, extract, pos)
+import Zipper (Zipper, lefts, rights, zipper)
 
 player1Color :: Text
 player1Color = "#C0BFBF"
@@ -82,7 +80,6 @@ renderUIState prevUIState uiState = do
         traverse_ (drawPawn (uiState ^. uisLacunaState) . (,player2Color) . toCanvasPoint) (uiState ^. uisLacunaState . lsPlayer2 . psPawns)
         drawPawn (uiState ^. uisLacunaState) (projectOnLineBounded (uiState ^. uisMousePos) (a, b), uiState ^. uisLacunaState . currentPlayerColor)
 
--- TODO: Still not right
 flowerMoves :: UIState -> UIState -> [Canvas ()]
 flowerMoves prevUIState uiState = maybe [] (concat . toList . extend drawZipperFlower) changedFlowersZipper
   where
@@ -93,12 +90,12 @@ flowerMoves prevUIState uiState = maybe [] (concat . toList . extend drawZipperF
       Map.fromList $
         playerStateFlowers player1StateStartP (uiState ^. uisLacunaState . lsPlayer1 . psCaptured)
           <> playerStateFlowers player2StateStartP (uiState ^. uisLacunaState . lsPlayer2 . psCaptured)
-    changedFlowersZipper = Z.fromNonEmpty <$> nonEmpty (Map.toList $ Map.restrictKeys allPlayerFlowers changedFlowers)
-    drawZipperFlower :: Zipper (V2 Int, CanvasPoint Double) -> [Canvas ()]
+    changedFlowersZipper = zipper (Map.toList $ Map.restrictKeys allPlayerFlowers changedFlowers)
+    drawZipperFlower :: Zipper [] (V2 Int, CanvasPoint Double) -> [Canvas ()]
     drawZipperFlower flowerZ =
-      let (flower, p) = Z.current flowerZ
-          (Set.fromList -> alreadyMovedFlowers) = fst <$> Z.lefts flowerZ
-          notMovedFlowers = Set.insert flower $ Set.fromList $ fst <$> Z.rights flowerZ
+      let (flower, p) = extract flowerZ
+          (Set.fromList -> alreadyMovedFlowers) = fst <$> lefts flowerZ
+          notMovedFlowers = Set.insert flower $ Set.fromList $ fst <$> rights flowerZ
           removeFlowers (a, b, c, d, e, f, g) =
             ( a `Set.difference` notMovedFlowers,
               b `Set.difference` notMovedFlowers,

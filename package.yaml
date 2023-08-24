@@ -58,7 +58,6 @@ dependencies:
   - foreign-store
   - lens
   - linear
-  - nonempty-zipper
   - random
   - rio >= 0.1.12.0
 

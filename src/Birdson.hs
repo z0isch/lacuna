@@ -1,6 +1,6 @@
 {-# OPTIONS_GHC -Wno-unused-top-binds #-}
 
-module Birdson (runBirdson) where
+module Birdson (birdson) where
 
 import Control.Lens (use, (%=))
 import Control.Lens.TH
@@ -11,8 +11,7 @@ import RIO.List qualified as L
 import RIO.Set qualified as Set
 import RIO.Set.Partial qualified as Set
 import RIO.State
-  ( MonadState (get),
-    StateT,
+  ( get,
     evalStateT,
   )
 import System.Random (Random, randomRIO)
@@ -27,9 +26,6 @@ data Birdson = Birdson
   deriving stock (Show)
 
 $(makeLenses ''Birdson)
-
-runBirdson :: MonadIO m => Int -> m (Set (V2 Int))
-runBirdson = evalStateT birdson <=< initialBirdson
 
 initialBirdson :: MonadIO m => Int -> m Birdson
 initialBirdson bounds = do
@@ -46,8 +42,8 @@ initialBirdson bounds = do
         _birdsonBounds = bounds
       }
 
-birdson :: MonadIO m => StateT Birdson m (Set (V2 Int))
-birdson = go >> use birdsonInactive
+birdson :: MonadIO m => Int -> m (Set (V2 Int))
+birdson = evalStateT (go >> use birdsonInactive) <=< initialBirdson
   where
     go = do
       b <- get
